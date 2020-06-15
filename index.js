@@ -741,16 +741,21 @@ HttpStatusAccessory.prototype = {
             .setCharacteristic(Characteristic.ConfiguredName, "TV " + this.name);
 
         // POWER
-         this.televisionService
-             .getCharacteristic(Characteristic.Active)
-             .on('get', this.getPowerState.bind(this))
-             .on('set', this.setPowerState.bind(this));
+         
 
         this.televisionService
             .setCharacteristic(
                  Characteristic.SleepDiscoveryMode,
                  Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
-            );
+            )
+            .getCharacteristic(Characteristic.Active)
+            .on('get', this.getPowerState.bind(this))
+            .on('set', this.setPowerState.bind(this));
+
+        //this.televisionService
+        //     .getCharacteristic(Characteristic.Active)
+          //   .on('get', this.getPowerState.bind(this))
+            // .on('set', this.setPowerState.bind(this));
 
         //this.televisionService
         //    .getCharacteristic(Characteristic.RemoteKey)
