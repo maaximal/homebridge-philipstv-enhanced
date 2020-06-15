@@ -1,16 +1,15 @@
 # homebridge-philipstv-enhanced
 
-Homebridge module for the Philips TV 49PUS7101 & 75PUS7354
+Homebridge module for Philips TVs
 
 # Description
 
-Homebridge module for the Philips TV 49PUS7101 & 75PUS7354
+Homebridge module for Philips TVs. Supports the tv homekit integration with tv on/off, volume and ambilight on/off
 
 # Installation
 
-1. Install homebridge using: npm install -g homebridge
-2. Install this plugin using: npm install -g homebridge-philipstv-knitter
-3. Update your configuration file. See the sample below.
+Add the package to your package.json under dependencies: "homebridge-philipstv-enhanced": "maaximal/homebridge-philipstv-enhanced"
+
 
 # Configuration
  
