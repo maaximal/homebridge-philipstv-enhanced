@@ -32,24 +32,12 @@ function HttpStatusAccessory(log, config) {
     this.password = config["password"] || "";
 
     // CHOOSING API VERSION BY MODEL/YEAR
-    switch (this.model_year_nr) {
-        case 2018:
-            this.api_version = 6;
-            break;
-        case 2017:
-            this.api_version = 6;
-            break;
-        case 2016:
-            this.api_version = 6;
-            break;
-        case 2015:
-            this.api_version = 5;
-            break;
-        case 2014:
-            this.api_version = 5;
-            break;
-        default:
-            this.api_version = 1;
+    if (this.model_year_nr >= 2016) {
+        this.api_version = 6;
+    } else if (this.model_year_nr >= 2014) {
+        this.api_version = 5;
+    } else {
+        this.api_version = 1;
     }
 
     // CONNECTION SETTINGS
@@ -644,8 +632,6 @@ HttpStatusAccessory.prototype = {
             keyName = "Confirm";
         } else if (key == Characteristic.RemoteKey.PLAY_PAUSE) {
             keyName = "PlayPause";
-        } else if (key == Characteristic.RemoteKey.KEY_POWER) {
-            keyName = "Power";
         }
          else if (key == 'VolumeUp') {
             keyName = "VolumeUp";
@@ -654,21 +640,16 @@ HttpStatusAccessory.prototype = {
         }
         if (keyName != null) {
             url = this.input_url;
-            if (keyName == "Power"){
-                this.setPowerState.bind(this)
-            }
-            else{
-                body = JSON.stringify({"key": keyName});
-                this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
-                    if (error) {
-                        this.log('sendKey - error: ', error.message);
-                    } else {
-                        this.log('sendKey - succeeded - %s', key);
-                    }
-                }.bind(this));
-            }
-            callback(null, null);
-       } 
+            body = JSON.stringify({"key": keyName});
+            this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
+                if (error) {
+                    this.log('sendKey - error: ', error.message);
+                } else {
+                    this.log('sendKey - succeeded - %s', key);
+                }
+            }.bind(this));
+        }
+        callback(null, null);
     },
 
     identify: function(callback) {
