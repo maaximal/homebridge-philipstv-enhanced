@@ -194,7 +194,6 @@ HttpStatusAccessory.prototype = {
                     callback(new Error("Request attempt failed"));
                 }
             } else {
-                this.log('succeeded - answer: %s', responseBody);
                 callback(null, response, responseBody);
             }
         }.bind(this));
@@ -228,7 +227,6 @@ HttpStatusAccessory.prototype = {
     },
 
     wolRequest: function(url, callback) {
-        this.log('calling WOL with URL %s', url);
         if (!url) {
             callback(null, "EMPTY");
             return;
@@ -261,20 +259,14 @@ HttpStatusAccessory.prototype = {
           that.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {       
              if (error) {       
                  if (nCount > 0) {      
-                     that.log('setVolumeStateLoop - attempt, attempt id: ', nCount - 1);        
-                     that.log("Sent with : %s", url);       
                      that.setVolumeStateLoop(nCount - 1, url, body, volumeState, function(err, state) {     
                          callback(err, state);      
                      });        
-                 } else {       
-                     that.log('setVolumeStateLoop - failed: %s', error.message);        
-                     that.log("Sent with : %s", url);       
+                 } else {          
                      volumeState = false;       
                      callback(new Error("HTTP attempt failed"), volumeState);       
                  }      
-             } else {       
-                 that.log('setVolumeStateLoop - succeeded - current state: %s', volumeState);       
-                 that.log("Sent with : %s", url);       
+             } else {          
                  callback(null, volumeState);       
              }      
          });        
@@ -283,10 +275,7 @@ HttpStatusAccessory.prototype = {
       setVolumeState: function(volumeState, callback, context) {        
          var url = this.audio_url;      
          var body;      
-         var that = this;       
-     
-         that.log("Sent with : %s", url);       
-         that.log("Sent with body : %s", body);     
+         var that = this;         
 
           //if context is statuspoll, then we need to ensure that we do not set the actual value        
          if (context && context == "statuspoll") {      
@@ -297,13 +286,9 @@ HttpStatusAccessory.prototype = {
           this.set_attempt = this.set_attempt + 1;      
 
           if (volumeState) {        
-             body = this.audio_unmute_body;     
-             this.log("setVolumeState - setting state to on");      
-             that.log("Sent with body : %s", body);     
+             body = this.audio_unmute_body;          
          } else {       
-             body = this.audio_mute_body;       
-             this.log("setVolumeState - setting state to off");     
-             that.log("Sent with body : %s", body);     
+             body = this.audio_mute_body;           
          }      
 
           that.setVolumeStateLoop(0, url, body, volumeState, function(error, state) {       
@@ -327,10 +312,7 @@ HttpStatusAccessory.prototype = {
 
           that.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {       
              if (error) {       
-                 if (nCount > 0) {      
-                     that.log('setVolumeLevelLoop - attempt, attempt id: ', nCount - 1);        
-                     that.log("Sent with : %s", url);       
-                     that.log("Sent with body : %s", body);     
+                 if (nCount > 0) {        
                      that.setVolumeLevelLoop(nCount - 1, url, body, volumeLevel, function(err, state) {     
                          callback(err, state);      
                      });        
@@ -342,9 +324,6 @@ HttpStatusAccessory.prototype = {
                      callback(new Error("HTTP attempt failed"), volumeLevel);       
                  }      
              } else {       
-                 that.log('setVolumeLevelLoop - succeeded - current level: %s', volumeLevel);       
-                 that.log("Sent with : %s", url);       
-                 that.log("Sent with body : %s", body);     
                  callback(null, volumeLevel);       
              }      
          });        
@@ -354,9 +333,7 @@ HttpStatusAccessory.prototype = {
          var TV_Adjusted_volumeLevel = Math.round(volumeLevel / 4);     
          var url = this.audio_url;      
          var body = JSON.stringify({"muted": "false", "current": TV_Adjusted_volumeLevel});     
-         var that = this;       
-
-        this.log.debug("Entering %s with context: %s and target value: %s", arguments.callee.name, context, volumeLevel);       
+         var that = this;            
 
           //if context is statuspoll, then we need to ensure that we do not set the actual value        
          if (context && context == "statuspoll") {      
@@ -384,8 +361,7 @@ HttpStatusAccessory.prototype = {
       getVolumeState: function(callback, context) {     
          var that = this;       
          var url = this.audio_url;      
-            that.log("getVolumeState with : %s", url);      
-            this.log.debug("Entering %s with context: %s and current state: %s", arguments.callee.name, context, this.state_volume);        
+    
 
           //if context is statuspoll, then we need to request the actual value      
         if ((!context || context != "statuspoll") && this.switchHandling == "poll") {       
@@ -410,7 +386,7 @@ HttpStatusAccessory.prototype = {
                         responseBodyParsed = JSON.parse(responseBody);      
                         if (responseBodyParsed) {       
                             tResp = (responseBodyParsed.muted == "true") ? 0 : 1;       
-                            that.log.debug('%s - got answer %s', fctname, tResp);       
+                       
                         } else {        
                             that.log("%s - Could not parse message: '%s', not updating state", fctname, responseBody);      
                         }       
@@ -421,7 +397,7 @@ HttpStatusAccessory.prototype = {
                      }      
                  }      
                  if (that.state_volume != tResp) {      
-                     that.log('%s - state changed to: %s', fctname, tResp);     
+                        
                     that.state_volume = tResp;      
                  }      
              }      
@@ -431,9 +407,7 @@ HttpStatusAccessory.prototype = {
 
       getVolumeLevel: function(callback, context) {     
          var that = this;       
-         var url = this.audio_url;      
-            that.log("getVolumeLevel with : %s", this.audio_url);       
-            this.log.debug("Entering %s with context: %s and current value: %s", arguments.callee.name, context, this.state_volumeLevel);       
+         var url = this.audio_url;            
          //if context is statuspoll, then we need to request the actual value       
         if ((!context || context != "statuspoll") && this.switchHandling == "poll") {       
              callback(null, this.state_volumeLevel);        
@@ -457,7 +431,6 @@ HttpStatusAccessory.prototype = {
                         responseBodyParsed = JSON.parse(responseBody);      
                         if (responseBodyParsed) {       
                             tResp = Math.round(4 * responseBodyParsed.current);     
-                            that.log.debug('%s - got answer %s', fctname, tResp);       
                         } else {        
                             that.log("%s - Could not parse message: '%s', not updating level", fctname, responseBody);      
                         }       
@@ -467,8 +440,7 @@ HttpStatusAccessory.prototype = {
             responseBodyParsed = false;     
                      }      
                  }      
-                if (that.state_volumeLevel != tResp) {      
-                     that.log('%s - Level changed to: %s', fctname, tResp);     
+                if (that.state_volumeLevel != tResp) {          
                     that.state_volumeLevel = tResp;     
                 }       
              }      
@@ -483,7 +455,6 @@ HttpStatusAccessory.prototype = {
         that.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
             if (error) {
                 if (nCount > 0) {
-                    that.log('setPowerStateLoop - powerstate attempt, attempt id: ', nCount - 1);
                     that.setPowerStateLoop(nCount - 1, url, body, powerState, function(err, state_power) {
                         callback(err, state_power);
                     });
@@ -493,7 +464,6 @@ HttpStatusAccessory.prototype = {
                     callback(new Error("HTTP attempt failed"), powerState);
                 }
             } else {
-                that.log('setPowerStateLoop - Succeeded - current state: %s', powerState);
                 callback(null, powerState);
             }
         });
@@ -503,8 +473,6 @@ HttpStatusAccessory.prototype = {
         var url = this.power_url;
         var body;
         var that = this;
-
-		this.log.debug("Entering %s with context: %s and target value: %s", arguments.callee.name, context, powerState);
 
         if (context && context == "statuspoll") {
 				callback(null, powerState);
@@ -519,13 +487,10 @@ HttpStatusAccessory.prototype = {
                 callback(new Error("Power On is not possible for model_year before 2014."));
             }
             body = this.power_on_body;
-            this.log("setPowerState - Will power on");
 			// If Mac Addr for WOL is set
 			if (this.wol_url) {
 				that.log('setPowerState - Sending WOL');
 				this.wolRequest(this.wol_url, function(error, response) {
-					that.log('setPowerState - WOL callback response: %s', response);
-					that.log('setPowerState - powerstate attempt, attempt id: ', 8);
 					//execute the callback immediately, to give control back to homekit
 					callback(error, that.state_power);
 					that.setPowerStateLoop(8, url, body, powerState, function(error, state_power) {
@@ -542,7 +507,6 @@ HttpStatusAccessory.prototype = {
 			}
         } else {
             body = this.power_off_body;
-            this.log("setPowerState - Will power off");
             that.setPowerStateLoop(0, url, body, powerState, function(error, state_power) {
                 that.state_power = state_power;
                 if (error) {
@@ -568,9 +532,6 @@ HttpStatusAccessory.prototype = {
     getPowerState: function(callback, context) {
         var that = this;
         var url = this.power_url;
-
-        that.log("getPowerState with : %s", url);
-   		this.log.debug("Entering %s with context: %s and current value: %s", arguments.callee.name, context, this.state_power);
         //if context is statuspoll, then we need to request the actual value else we return the cached value
 		if ((!context || context != "statuspoll") && this.switchHandling == "poll") {
             callback(null, this.state_power);
@@ -601,7 +562,6 @@ HttpStatusAccessory.prototype = {
                     }
                 }
                 if (that.state_power != tResp) {
-                    that.log('%s - Level changed to: %s', fctname, tResp);
 	                that.state_power = tResp;
                 }
             }
@@ -611,7 +571,6 @@ HttpStatusAccessory.prototype = {
 
     /// Send a key  -----------------------------------------------------------------------------------------------------------
     sendKey: function(key, callback, context) {
-        this.log("Entering %s with context: %s and target value: %s", arguments.callee.name, context, key);
 
         var keyName = null;
         if (key == Characteristic.RemoteKey.ARROW_UP) {
@@ -644,16 +603,13 @@ HttpStatusAccessory.prototype = {
             this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
                 if (error) {
                     this.log('sendKey - error: ', error.message);
-                } else {
-                    this.log('sendKey - succeeded - %s', key);
-                }
+                } 
             }.bind(this));
         }
         callback(null, null);
     },
 
     identify: function(callback) {
-        this.log("Identify requested!");
         callback(); // success
     },
 
@@ -668,14 +624,12 @@ HttpStatusAccessory.prototype = {
 
         var url = (ambilightState) ? this.on_url_ambilight : this.off_url_ambilight;
 		var body = (ambilightState) ? this.on_body_ambilight : this.off_body_ambilight;
-        that.log("setAmbilightState - setting state to %s", ambilightState ? "ON" : "OFF");
         that.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) 
         {
             if (error) {
 				that.log('setAmbilightState - failed: %s', error.message);
 				callback(new Error("HTTP attempt failed"), false);
             } else {
-                that.log('setAmbilightState - succeeded - current state: %s', ambilightState);
                 callback(null, ambilightState);
             }
         });
@@ -772,7 +726,6 @@ HttpStatusAccessory.prototype = {
              .getCharacteristic(Characteristic.VolumeSelector)      
              .on('set', (state, callback) => {      
              var keyName;       
-             this.log('volume change over the remote control (VolumeSelector), pressed: %s', state === 1 ? 'Down' : 'Up');      
              if(state === 1) {      
                  keyName = 'VolumeDown';        
              } else {       
