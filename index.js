@@ -296,8 +296,7 @@ HttpStatusAccessory.prototype = {
          var url = this.audio_url;      
          var body;      
          var that = this;       
-
-        this.log.debug("Entering %s with context: %s and target value: %s", arguments.callee.name, context, volumeState);       
+     
          that.log("Sent with : %s", url);       
          that.log("Sent with body : %s", body);     
 
@@ -757,10 +756,10 @@ HttpStatusAccessory.prototype = {
                  Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
             );
 
-        //this.televisionService
-        //     .getCharacteristic(Characteristic.Active)
-          //   .on('get', this.getPowerState.bind(this))
-            // .on('set', this.setPowerState.bind(this));
+        this.televisionService
+             .getCharacteristic(Characteristic.Active)
+             .on('get', this.getPowerState.bind(this))
+             .on('set', this.setPowerState.bind(this));
 
         this.televisionService
             .getCharacteristic(Characteristic.RemoteKey)
