@@ -645,23 +645,31 @@ HttpStatusAccessory.prototype = {
             keyName = "Confirm";
         } else if (key == Characteristic.RemoteKey.PLAY_PAUSE) {
             keyName = "PlayPause";
-        } else if (key == 'VolumeUp') {
+        } else if (key == Characteristic.RemoteKey.KEY_POWER) {
+            keyName = "Power";
+        }
+         else if (key == 'VolumeUp') {
             keyName = "VolumeUp";
         } else if (key == 'VolumeDown') {
             keyName = "VolumeDown";
         }
         if (keyName != null) {
             url = this.input_url;
-            body = JSON.stringify({"key": keyName});
-            this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
-                if (error) {
-                    this.log('sendKey - error: ', error.message);
-                } else {
-                    this.log('sendKey - succeeded - %s', key);
-                }
-            }.bind(this));
-        }
-        callback(null, null);
+            if (keyname == "Power"){
+                this.setPowerState.bind(this)
+            }
+            else{
+                body = JSON.stringify({"key": keyName});
+                this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
+                    if (error) {
+                        this.log('sendKey - error: ', error.message);
+                    } else {
+                        this.log('sendKey - succeeded - %s', key);
+                    }
+                }.bind(this));
+            }
+            callback(null, null);
+       } 
     },
 
     identify: function(callback) {
@@ -747,19 +755,17 @@ HttpStatusAccessory.prototype = {
             .setCharacteristic(
                  Characteristic.SleepDiscoveryMode,
                  Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
-            )
-            .getCharacteristic(Characteristic.Active)
-            .on('get', this.getPowerState.bind(this))
-            .on('set', this.setPowerState.bind(this));
+            );
 
         //this.televisionService
         //     .getCharacteristic(Characteristic.Active)
           //   .on('get', this.getPowerState.bind(this))
             // .on('set', this.setPowerState.bind(this));
 
-        //this.televisionService
-        //    .getCharacteristic(Characteristic.RemoteKey)
-        //    .on('set', this.sendKey.bind(this));
+        this.televisionService
+            .getCharacteristic(Characteristic.RemoteKey)
+            .on('get', this.getPowerState.bind(this))
+            .on('set', this.sendKey.bind(this));
 
         this.switchService = new Service.Switch(this.name);
         this.switchService
