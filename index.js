@@ -655,7 +655,7 @@ HttpStatusAccessory.prototype = {
         }
         if (keyName != null) {
             url = this.input_url;
-            if (keyname == "Power"){
+            if (keyName == "Power"){
                 this.setPowerState.bind(this)
             }
             else{
